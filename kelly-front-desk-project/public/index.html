@@ -1087,6 +1087,7 @@ All rights reserved.
                 <button class="nav-btn" id="document-completions-btn" onclick="showDashboardSection('document-completions')" style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; font-weight: bold;">📋 Document Queue <span id="completions-indicator" style="display: none; background: white; color: #ff6b6b; border-radius: 50%; padding: 4px 8px; margin-left: 8px; font-size: 12px; font-weight: bold;">0</span></button>
                 <button class="nav-btn" id="info-sessions-btn" onclick="showDashboardSection('info-sessions')" style="display: none;">Info Sessions</button>
                 <button class="nav-btn" id="new-hire-orientations-btn" onclick="showDashboardSection('new-hire-orientations')" style="display: none;">New Hire Orientations</button>
+                <button class="nav-btn" id="advanced-analytics-btn" onclick="showDashboardSection('advanced-analytics-staff')" style="display: none; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: bold;">📊 Advanced Analytics</button>
                 <button class="nav-btn" onclick="showDashboardSection('fingerprints-admin')">Fingerprints</button>
                 <button class="nav-btn" onclick="showDashboardSection('badges-staff')">Badges</button>
                 <button class="nav-btn" onclick="showDashboardSection('pc-rr-check')">PC, RR Check</button>
@@ -1197,6 +1198,13 @@ All rights reserved.
                     </div>
                     
                     <div id="exclusion-check-result"></div>
+                </div>
+            </div>
+
+            <!-- Advanced Analytics (Staff) -->
+            <div id="advanced-analytics-staff" class="dashboard-section" style="display: none;">
+                <div id="staff-analytics-container">
+                    <!-- Advanced analytics dashboard will be rendered here by JavaScript -->
                 </div>
             </div>
 
@@ -2758,6 +2766,7 @@ All rights reserved.
                 console.log('🔔 Showing standard buttons for all staff...');
                 document.getElementById('info-sessions-btn').style.display = 'block';
                 document.getElementById('new-hire-orientations-btn').style.display = 'block';
+                document.getElementById('advanced-analytics-btn').style.display = 'block';
                 console.log('✅ Standard buttons shown');
                 
                 // Show staff-only elements
@@ -2971,6 +2980,7 @@ All rights reserved.
             isAdmin = false;
             document.getElementById('info-sessions-btn').style.display = 'none';
             document.getElementById('new-hire-orientations-btn').style.display = 'none';
+            document.getElementById('advanced-analytics-btn').style.display = 'none';
             // Keep My Status visible for all staff
             // document.getElementById('recruiter-status-btn').style.display = 'none';
             document.getElementById('recruiter-events-btn').style.display = 'none';
@@ -3047,6 +3057,9 @@ All rights reserved.
             } else if (sectionId === 'new-hire-orientations') {
                 console.log('🔍 DEBUG: Switching to new-hire-orientations section');
                 loadStaffOrientations();
+            } else if (sectionId === 'advanced-analytics-staff') {
+                console.log('🔍 DEBUG: Switching to advanced-analytics-staff section');
+                loadStaffAdvancedAnalytics();
             } else if (sectionId === 'fingerprints-admin') {
                 console.log('🔍 DEBUG: Switching to fingerprints-admin section');
                 loadFingerprints();
@@ -3110,6 +3123,8 @@ All rights reserved.
                 loadAdminBookingCounts();
             } else if (sectionId === 'daily-statistics') {
                 loadTodayStatistics();
+            } else if (sectionId === 'advanced-analytics') {
+                loadAdvancedAnalytics();
             }
         }
 
@@ -15392,6 +15407,488 @@ async function submitDirectForm(event) {
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '✅ Submit Document Completion';
+    }
+}
+
+// 📊 ADVANCED ANALYTICS FUNCTIONS - PYTHON API INTEGRATION
+const API_BASE_URL = 'http://localhost:8000/api/v1';
+
+async function loadAdvancedAnalytics() {
+    console.log('📊 Loading Advanced Analytics...');
+    const container = document.getElementById('admin-dashboard-container');
+    
+    // Show loading state
+    container.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+            <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="margin-top: 20px; color: #666;">Loading Advanced Analytics...</p>
+        </div>
+        <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        </style>
+    `;
+
+    try {
+        // Fetch analytics data from Python API
+        const [summaryResponse, widgetsResponse] = await Promise.all([
+            fetch(`${API_BASE_URL}/analytics/summary`),
+            fetch(`${API_BASE_URL}/dashboard/widgets`)
+        ]);
+
+        if (!summaryResponse.ok || !widgetsResponse.ok) {
+            throw new Error('Failed to fetch analytics data');
+        }
+
+        const summaryData = await summaryResponse.json();
+        const widgetsData = await widgetsResponse.json();
+
+        // Render advanced analytics dashboard
+        container.innerHTML = `
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h2 style="margin: 0; font-size: 24px;">📊 Advanced Analytics Dashboard</h2>
+                <p style="margin: 5px 0 0 0; opacity: 0.9;">Powered by Python Analytics API</p>
+            </div>
+
+            <!-- Summary Cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                ${widgetsData.summary_cards.map(card => `
+                    <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-left: 4px solid ${getCardColor(card.color)};">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="margin: 0; color: #333; font-size: 14px; font-weight: 600;">${card.title}</h3>
+                                <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: bold; color: ${getCardColor(card.color)};">${card.value}</p>
+                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">${card.trend}</p>
+                            </div>
+                            <div style="font-size: 30px; opacity: 0.7;">${card.icon}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <!-- Charts Section -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <!-- Visits Trend Chart -->
+                <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 20px 0; color: #333;">📈 Visits Trend (30 days)</h3>
+                    <div id="visits-trend-chart" style="height: 300px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666;">
+                        <div>Chart will load here</div>
+                    </div>
+                </div>
+
+                <!-- Visit Types Chart -->
+                <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 20px 0; color: #333;">🍰 Visit Types Distribution</h3>
+                    <div id="visit-types-chart" style="height: 300px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666;">
+                        <div>Chart will load here</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Section -->
+            <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 20px 0; color: #333;">📋 Export Data</h3>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button onclick="exportData('visits', 'excel')" class="btn" style="background: #28a745; color: white;">
+                        📊 Export Visits (Excel)
+                    </button>
+                    <button onclick="exportData('staff', 'excel')" class="btn" style="background: #17a2b8; color: white;">
+                        👥 Export Staff (Excel)
+                    </button>
+                    <button onclick="exportData('document-queue', 'csv')" class="btn" style="background: #fd7e14; color: white;">
+                        📄 Export Documents (CSV)
+                    </button>
+                    <button onclick="generateReport('daily')" class="btn" style="background: #6f42c1; color: white;">
+                        📈 Generate Daily Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- API Status -->
+            <div style="margin-top: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; color: #155724;">
+                ✅ <strong>API Connected:</strong> Data updated at ${new Date().toLocaleString()}
+                <br>📡 <strong>Backend:</strong> Python FastAPI running on localhost:8000
+            </div>
+        `;
+
+        // Load charts after a short delay to ensure DOM is ready
+        setTimeout(() => {
+            loadVisitsTrendChart();
+            loadVisitTypesChart();
+        }, 500);
+
+    } catch (error) {
+        console.error('❌ Error loading analytics:', error);
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 20px; border-radius: 8px; display: inline-block;">
+                    <h3 style="margin: 0 0 10px 0;">⚠️ Analytics API Unavailable</h3>
+                    <p style="margin: 0;">Unable to connect to Python backend API.</p>
+                    <p style="margin: 10px 0 0 0; font-size: 14px;">Make sure the backend server is running on localhost:8000</p>
+                    <button onclick="loadAdvancedAnalytics()" class="btn" style="background: #dc3545; color: white; margin-top: 15px;">
+                        🔄 Retry Connection
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function getCardColor(color) {
+    const colors = {
+        'blue': '#3498db',
+        'green': '#28a745',
+        'orange': '#fd7e14',
+        'purple': '#6f42c1',
+        'red': '#dc3545'
+    };
+    return colors[color] || '#6c757d';
+}
+
+async function loadVisitsTrendChart() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/dashboard/chart/visits-trend?chart_type=line`);
+        const data = await response.json();
+        
+        const chartContainer = document.getElementById('visits-trend-chart');
+        if (data.raw_data && data.raw_data.dates.length > 0) {
+            // Simple chart representation
+            const maxValue = Math.max(...data.raw_data.visits);
+            const chartHTML = data.raw_data.dates.slice(-7).map((date, index) => {
+                const value = data.raw_data.visits[data.raw_data.visits.length - 7 + index] || 0;
+                const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
+                return `
+                    <div style="display: inline-block; margin: 0 2px; text-align: center; flex: 1;">
+                        <div style="height: 200px; display: flex; align-items: end;">
+                            <div style="width: 100%; background: #3498db; height: ${height}%; min-height: 2px; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 10px; margin-top: 5px; color: #666;">${new Date(date).toLocaleDateString('en-US', {month: 'numeric', day: 'numeric'})}</div>
+                        <div style="font-size: 12px; font-weight: bold; color: #333;">${value}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            chartContainer.innerHTML = `
+                <div style="display: flex; align-items: end; height: 100%; padding: 20px;">
+                    ${chartHTML}
+                </div>
+            `;
+        } else {
+            chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">No data available</div>';
+        }
+    } catch (error) {
+        console.error('Error loading visits chart:', error);
+    }
+}
+
+async function loadVisitTypesChart() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/analytics/visits/types`);
+        const data = await response.json();
+        
+        const chartContainer = document.getElementById('visit-types-chart');
+        if (data.labels && data.labels.length > 0) {
+            const total = data.values.reduce((sum, val) => sum + val, 0);
+            const colors = ['#3498db', '#e74c3c', '#f39c12', '#2ecc71', '#9b59b6', '#1abc9c'];
+            
+            const chartHTML = data.labels.map((label, index) => {
+                const value = data.values[index];
+                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                const color = colors[index % colors.length];
+                
+                return `
+                    <div style="display: flex; align-items: center; margin: 10px 0; padding: 8px; border-radius: 6px; background: ${color}15;">
+                        <div style="width: 16px; height: 16px; background: ${color}; border-radius: 50%; margin-right: 10px;"></div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; color: #333;">${label}</div>
+                            <div style="font-size: 14px; color: #666;">${value} visits (${percentage}%)</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            chartContainer.innerHTML = `
+                <div style="padding: 20px;">
+                    ${chartHTML}
+                </div>
+            `;
+        } else {
+            chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">No visit types data available</div>';
+        }
+    } catch (error) {
+        console.error('Error loading visit types chart:', error);
+    }
+}
+
+async function exportData(collection, format) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/reports/export`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                collection: collection,
+                format: format
+            })
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${collection}_export_${new Date().toISOString().split('T')[0]}.${format}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showSuccessMessage(`✅ ${collection} data exported successfully!`);
+        } else {
+            throw new Error('Export failed');
+        }
+    } catch (error) {
+        console.error('Export error:', error);
+        showErrorMessage(`❌ Failed to export ${collection} data. Make sure the API server is running.`);
+    }
+}
+
+async function generateReport(reportType) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/reports/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                report_type: 'visits',
+                format: 'excel',
+                include_charts: true
+            })
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${reportType}_report_${new Date().toISOString().split('T')[0]}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showSuccessMessage(`✅ ${reportType} report generated successfully!`);
+        } else {
+            throw new Error('Report generation failed');
+        }
+    } catch (error) {
+        console.error('Report generation error:', error);
+        showErrorMessage(`❌ Failed to generate ${reportType} report. Make sure the API server is running.`);
+    }
+}
+
+// 📊 STAFF ADVANCED ANALYTICS FUNCTION
+async function loadStaffAdvancedAnalytics() {
+    console.log('📊 Loading Staff Advanced Analytics...');
+    const container = document.getElementById('staff-analytics-container');
+    
+    // Show loading state
+    container.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+            <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="margin-top: 20px; color: #666;">Loading Analytics Dashboard...</p>
+        </div>
+        <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        </style>
+    `;
+
+    try {
+        // Fetch analytics data from Python API
+        const [summaryResponse, widgetsResponse] = await Promise.all([
+            fetch(`${API_BASE_URL}/analytics/summary`),
+            fetch(`${API_BASE_URL}/dashboard/widgets`)
+        ]);
+
+        if (!summaryResponse.ok || !widgetsResponse.ok) {
+            throw new Error('Failed to fetch analytics data');
+        }
+
+        const summaryData = await summaryResponse.json();
+        const widgetsData = await widgetsResponse.json();
+
+        // Render staff analytics dashboard (similar to admin but with staff styling)
+        container.innerHTML = `
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h2 style="margin: 0; font-size: 24px;">📊 Staff Analytics Dashboard</h2>
+                <p style="margin: 5px 0 0 0; opacity: 0.9;">Real-time data powered by Python Analytics API</p>
+            </div>
+
+            <!-- Summary Cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                ${widgetsData.summary_cards.map(card => `
+                    <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-left: 4px solid ${getCardColor(card.color)};">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="margin: 0; color: #333; font-size: 14px; font-weight: 600;">${card.title}</h3>
+                                <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: bold; color: ${getCardColor(card.color)};">${card.value}</p>
+                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">${card.trend}</p>
+                            </div>
+                            <div style="font-size: 30px; opacity: 0.7;">${card.icon}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <!-- Charts Section -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <!-- Visits Trend Chart -->
+                <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 20px 0; color: #333;">📈 Visits Trend (Last 7 days)</h3>
+                    <div id="staff-visits-trend-chart" style="height: 300px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666;">
+                        <div>Loading chart...</div>
+                    </div>
+                </div>
+
+                <!-- Visit Types Chart -->
+                <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 20px 0; color: #333;">🍰 Visit Types Distribution</h3>
+                    <div id="staff-visit-types-chart" style="height: 300px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666;">
+                        <div>Loading chart...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions for Staff -->
+            <div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 20px 0; color: #333;">⚡ Quick Actions</h3>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button onclick="exportData('visits', 'excel')" class="btn" style="background: #28a745; color: white;">
+                        📊 Export Visits Data
+                    </button>
+                    <button onclick="exportData('document-queue', 'csv')" class="btn" style="background: #fd7e14; color: white;">
+                        📄 Export Document Queue
+                    </button>
+                    <button onclick="generateReport('daily')" class="btn" style="background: #6f42c1; color: white;">
+                        📈 Generate Daily Report
+                    </button>
+                    <button onclick="loadStaffAdvancedAnalytics()" class="btn" style="background: #17a2b8; color: white;">
+                        🔄 Refresh Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- API Status -->
+            <div style="margin-top: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; color: #155724;">
+                ✅ <strong>Analytics Connected:</strong> Data last updated at ${new Date().toLocaleString()}
+                <br>📡 <strong>Source:</strong> Python FastAPI • Real-time database sync
+            </div>
+        `;
+
+        // Load charts after a short delay to ensure DOM is ready
+        setTimeout(() => {
+            loadStaffVisitsTrendChart();
+            loadStaffVisitTypesChart();
+        }, 500);
+
+    } catch (error) {
+        console.error('❌ Error loading staff analytics:', error);
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 20px; border-radius: 8px; display: inline-block;">
+                    <h3 style="margin: 0 0 10px 0;">⚠️ Analytics Temporarily Unavailable</h3>
+                    <p style="margin: 0;">Unable to connect to the analytics backend.</p>
+                    <p style="margin: 10px 0 0 0; font-size: 14px;">The analytics server may be starting up or temporarily offline.</p>
+                    <button onclick="loadStaffAdvancedAnalytics()" class="btn" style="background: #dc3545; color: white; margin-top: 15px;">
+                        🔄 Try Again
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+}
+
+async function loadStaffVisitsTrendChart() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/dashboard/chart/visits-trend?chart_type=line`);
+        const data = await response.json();
+        
+        const chartContainer = document.getElementById('staff-visits-trend-chart');
+        if (data.raw_data && data.raw_data.dates.length > 0) {
+            // Simple chart representation (last 7 days for staff view)
+            const maxValue = Math.max(...data.raw_data.visits);
+            const chartHTML = data.raw_data.dates.slice(-7).map((date, index) => {
+                const value = data.raw_data.visits[data.raw_data.visits.length - 7 + index] || 0;
+                const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
+                return `
+                    <div style="display: inline-block; margin: 0 2px; text-align: center; flex: 1;">
+                        <div style="height: 200px; display: flex; align-items: end;">
+                            <div style="width: 100%; background: #667eea; height: ${height}%; min-height: 2px; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 10px; margin-top: 5px; color: #666;">${new Date(date).toLocaleDateString('en-US', {month: 'numeric', day: 'numeric'})}</div>
+                        <div style="font-size: 12px; font-weight: bold; color: #333;">${value}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            chartContainer.innerHTML = `
+                <div style="display: flex; align-items: end; height: 100%; padding: 20px;">
+                    ${chartHTML}
+                </div>
+            `;
+        } else {
+            chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">No visit data available</div>';
+        }
+    } catch (error) {
+        console.error('Error loading staff visits chart:', error);
+        document.getElementById('staff-visits-trend-chart').innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">Chart unavailable</div>';
+    }
+}
+
+async function loadStaffVisitTypesChart() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/analytics/visits/types`);
+        const data = await response.json();
+        
+        const chartContainer = document.getElementById('staff-visit-types-chart');
+        if (data.labels && data.labels.length > 0) {
+            const total = data.values.reduce((sum, val) => sum + val, 0);
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
+            
+            const chartHTML = data.labels.map((label, index) => {
+                const value = data.values[index];
+                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                const color = colors[index % colors.length];
+                
+                return `
+                    <div style="display: flex; align-items: center; margin: 10px 0; padding: 8px; border-radius: 6px; background: ${color}15;">
+                        <div style="width: 16px; height: 16px; background: ${color}; border-radius: 50%; margin-right: 10px;"></div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; color: #333;">${label}</div>
+                            <div style="font-size: 14px; color: #666;">${value} visits (${percentage}%)</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            chartContainer.innerHTML = `
+                <div style="padding: 20px;">
+                    ${chartHTML}
+                </div>
+            `;
+        } else {
+            chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">No visit types data available</div>';
+        }
+    } catch (error) {
+        console.error('Error loading staff visit types chart:', error);
+        document.getElementById('staff-visit-types-chart').innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">Chart unavailable</div>';
     }
 }
 </script>
