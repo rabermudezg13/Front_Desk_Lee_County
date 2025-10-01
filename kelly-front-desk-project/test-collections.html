@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Firestore Collections</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <h1>Firestore Collections Test</h1>
+    <div id="results"></div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWkgqLhTdPyqGOLExkjCKKLbSv2RLKZdY",
+            authDomain: "kelly-education-front-desk.firebaseapp.com",
+            projectId: "kelly-education-front-desk",
+            storageBucket: "kelly-education-front-desk.appspot.com",
+            messagingSenderId: "889045332167",
+            appId: "1:889045332167:web:ac43f5e7d93f0e1b3f37e8"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        async function testCollections() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Testing collections...</p>';
+
+            try {
+                // Test new-hire-orientations collection
+                console.log('Testing new-hire-orientations collection...');
+                const orientationsSnapshot = await db.collection('new-hire-orientations').limit(5).get();
+                results.innerHTML += `<h3>New Hire Orientations: ${orientationsSnapshot.size} documents found</h3>`;
+                orientationsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    results.innerHTML += `<p>ID: ${doc.id}, Name: ${data.name || 'N/A'}, Date: ${data.timestamp || 'N/A'}</p>`;
+                });
+
+                // Test fingerprints collection
+                console.log('Testing fingerprints collection...');
+                const fingerprintsSnapshot = await db.collection('fingerprints').limit(5).get();
+                results.innerHTML += `<h3>Fingerprints: ${fingerprintsSnapshot.size} documents found</h3>`;
+                fingerprintsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    results.innerHTML += `<p>ID: ${doc.id}, Name: ${data.name || 'N/A'}, Date: ${data.timestamp || 'N/A'}</p>`;
+                });
+
+                // Test badges collection
+                console.log('Testing badges collection...');
+                const badgesSnapshot = await db.collection('badges').limit(5).get();
+                results.innerHTML += `<h3>Badges: ${badgesSnapshot.size} documents found</h3>`;
+                badgesSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    results.innerHTML += `<p>ID: ${doc.id}, Name: ${data.name || 'N/A'}, Date: ${data.timestamp || 'N/A'}</p>`;
+                });
+
+                // Test info-sessions collection for comparison
+                console.log('Testing info-sessions collection...');
+                const sessionsSnapshot = await db.collection('info-sessions').limit(5).get();
+                results.innerHTML += `<h3>Info Sessions: ${sessionsSnapshot.size} documents found</h3>`;
+                sessionsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    results.innerHTML += `<p>ID: ${doc.id}, Name: ${data.name || 'N/A'}, Date: ${data.timestamp || 'N/A'}</p>`;
+                });
+
+            } catch (error) {
+                console.error('Error testing collections:', error);
+                results.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        // Run test when page loads
+        window.onload = testCollections;
+    </script>
+</body>
+</html>

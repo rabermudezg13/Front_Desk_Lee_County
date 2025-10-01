@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelly Services - Document Completion Updated</title>
+    
+    <!-- Firebase Configuration -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .version-info {
+            text-align: center;
+            background: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+        }
+        
+        .step h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .step p {
+            margin: 0;
+            line-height: 1.6;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.3);
+            margin: 5px 0;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background: #45a049;
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="version-info">
+        </div>
+        
+        <h1>📄 Document Completion Process</h1>
+        
+        <form id="completionForm">
+            <div class="form-group">
+                <label for="fullName">Your Full Name *</label>
+                <input type="text" id="fullName" name="fullName" required placeholder="Enter your complete name">
+            </div>
+            
+            <div class="step">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="drugScreening" name="drugScreening">
+                    <div>
+                        <h3>🧪 Drug Screening</h3>
+                        <p><strong>Please fill out the paper you have in front of you, only the yellow fields and your phone number on the back side. Wait for instructions from Kelly representatives to do drug screening.</strong></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="onboarding365" name="onboarding365">
+                    <div>
+                        <h3>💼 Onboarding 365</h3>
+                        <p><strong>Please search in your email for an email that says "First Steps with Kelly", click on the blue link that says Onboarding 365. When you receive the congratulations window, you can continue to the next step.</strong></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="i9Form" name="i9Form">
+                    <div>
+                        <h3>📝 Form I-9</h3>
+                        <p><strong>Look for an email from Kelly with the title "Gryphon HR", fill out the information. The username is your email and the password is Kelly1234. If you didn't receive it but you are a reactivation, no worries you don't need to redo it.</strong></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="fingerprints" name="fingerprints">
+                    <div>
+                        <h3>👆 Fingerprints</h3>
+                        <p><strong>If you haven't done fingerprints before, please only create the account by scanning the QR code that has the title "Fingerprints". You will schedule appointment, sign up, fill out the information. When it asks for Verification code, the system sends it to your email. When it asks for Fieldprint code, you stop there. Check the submit box and wait for us to call you.</strong></p>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submitBtn">
+                ✅ Submit Document Completion
+            </button>
+            
+            <div id="statusMessage" class="status-message"></div>
+        </form>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWkgqLhTdPyqGOLExkjCKKLbSv2RLKZdY",
+            authDomain: "kelly-education-front-desk.firebaseapp.com",
+            projectId: "kelly-education-front-desk",
+            storageBucket: "kelly-education-front-desk.appspot.com",
+            messagingSenderId: "889045332167",
+            appId: "1:889045332167:web:ac43f5e7d93f0e1b3f37e8"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Form submission handler
+        document.getElementById('completionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const statusDiv = document.getElementById('statusMessage');
+            const fullName = document.getElementById('fullName').value.trim();
+            
+            if (!fullName) {
+                showStatus('Please enter your full name', 'error');
+                return;
+            }
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processing...';
+            statusDiv.style.display = 'none';
+            
+            try {
+                // Get checkbox values
+                const drugScreening = document.getElementById('drugScreening').checked;
+                const onboarding365 = document.getElementById('onboarding365').checked;
+                const i9Form = document.getElementById('i9Form').checked;
+                const fingerprints = document.getElementById('fingerprints').checked;
+                
+                // Create completion data
+                const now = new Date();
+                const queueNumber = Math.floor(now.getTime() / 1000) % 10000;
+                
+                const completionData = {
+                    type: 'document-completion',
+                    name: fullName,
+                    queueNumber: queueNumber,
+                    timestamp: now.toISOString(),
+                    completedAt: now.toISOString(),
+                    status: 'pending',
+                    steps: {
+                        drug_screening: drugScreening,
+                        onboarding365: onboarding365,
+                        i9: i9Form,
+                        fieldprint: fingerprints
+                    },
+                    completedSteps: [
+                        ...(drugScreening ? ['🧪 Drug Screening'] : []),
+                        ...(onboarding365 ? ['💼 Onboarding 365'] : []),
+                        ...(i9Form ? ['📝 Form I-9'] : []),
+                        ...(fingerprints ? ['👆 Fingerprints'] : [])
+                    ],
+                    source: 'updated-form',
+                    version: '2024-12-25-updated'
+                };
+                
+                // Save to Firestore
+                await db.collection('document-completions').add(completionData);
+                
+                // Show success message
+                showStatus('✅ Document completion submitted successfully! You will be contacted soon.', 'success');
+                
+                // Reset form
+                document.getElementById('completionForm').reset();
+                
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showStatus('❌ Error submitting form. Please try again.', 'error');
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Submit Document Completion';
+            }
+        });
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.style.display = 'block';
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

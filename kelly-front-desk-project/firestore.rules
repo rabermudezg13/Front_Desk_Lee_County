@@ -1,0 +1,128 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow public users to write visits, authenticated users can read/write
+    match /visits/{document} {
+      allow read: if request.auth != null;
+      allow write: if true; // Allow public registration
+    }
+    
+    // Allow public users to write info-sessions, authenticated users can read/write
+    match /info-sessions/{document} {
+      allow read: if request.auth != null;
+      allow write: if true; // Allow public registration
+    }
+    
+    // Allow public users to write fingerprints, authenticated users can read/write
+    match /fingerprints/{document} {
+      allow read: if request.auth != null;
+      allow write: if true; // Allow public registration
+    }
+    
+    // Allow public users to write badges, authenticated users can read/write
+    match /badges/{document} {
+      allow read: if request.auth != null;
+      allow write: if true; // Allow public registration
+    }
+    
+    // Allow public users to write new-hire-orientations, authenticated users can read/write
+    match /new-hire-orientations/{document} {
+      allow read: if request.auth != null;
+      allow write: if true; // Allow public registration
+    }
+    
+    // Allow read/write access to authenticated users for staff collection
+    match /staff/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow read/write access to authenticated users for users collection
+    match /users/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow read/write access to authenticated users for settings
+    match /settings/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow public users to write document completions - MAXIMUM PERMISSIVE
+    match /document-completions/{document} {
+      allow read, write, create, update, delete: if true; // ALLOW EVERYTHING for document-completions
+    }
+    
+    // Backup rule for document-completions (broader match) - MAXIMUM PERMISSIVE
+    match /document-completions/{document=**} {
+      allow read, write, create, update, delete: if true; // ALLOW EVERYTHING for any nested documents
+    }
+    
+    // Allow public users to write to document-queue - MAXIMUM PERMISSIVE
+    match /document-queue/{document} {
+      allow read, write, create, update, delete: if true; // ALLOW EVERYTHING for document-queue
+    }
+    
+    // Backup rule for document-queue (broader match) - MAXIMUM PERMISSIVE
+    match /document-queue/{document=**} {
+      allow read, write, create, update, delete: if true; // ALLOW EVERYTHING for any nested documents
+    }
+    
+    // Allow public users to read/write their own document completion progress
+    match /document-completion-progress/{document} {
+      allow read, write: if true; // Allow public access for persistent checklist
+    }
+    
+    // Allow authenticated users to read/write recruiter notifications
+    match /recruiter-notifications/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write recruiter availability
+    match /recruiter-availability/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow public write to daily counters for queue numbering, authenticated users can read/write
+    match /daily-counters/{document} {
+      allow read: if request.auth != null;
+      allow write: if true; // Allow public writes for queue number generation
+    }
+    
+    // Allow public write to counters for queue numbering, authenticated users can read/write
+    match /counters/{document} {
+      allow read: if request.auth != null;
+      allow write: if true; // Allow public writes for queue number generation
+    }
+    
+    // Allow public write to queue entries, authenticated users can read/write
+    match /queue/{date}/entries/{entry} {
+      allow read: if request.auth != null;
+      allow write: if true; // Allow public queue submissions
+    }
+    
+    // Allow authenticated users to read/write recruiter events
+    match /recruiter-events/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow public users to write event registrations, authenticated users can read/write
+    match /event-registrations/{document} {
+      allow read: if request.auth != null;
+      allow write: if true; // Allow public event registration submissions
+    }
+    
+    // Allow authenticated users to read/write daily archives
+    match /daily-archives/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write session backups
+    match /session-backups/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write event attendances
+    match /event-attendances/{document} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

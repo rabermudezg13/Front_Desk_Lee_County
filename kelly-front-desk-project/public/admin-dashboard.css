@@ -1,0 +1,423 @@
+/*
+Copyright (c) 2025 Rodrigo Bermudez Cafe Cultura LLC
+All rights reserved.
+*/
+
+/* ADMIN DASHBOARD STYLES */
+
+#admin-dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.dashboard-header h2 {
+    color: #333;
+    margin: 0;
+    font-size: 2rem;
+}
+
+.dashboard-filters {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.dashboard-filters select {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.dashboard-filters select:hover,
+.dashboard-filters select:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+/* KPI Cards */
+.kpi-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kpi-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.kpi-icon {
+    font-size: 3rem;
+    margin-right: 20px;
+    min-width: 60px;
+}
+
+.kpi-content h4 {
+    color: #666;
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.kpi-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.kpi-breakdown {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* Charts */
+.charts-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.chart-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.chart-section h3 {
+    color: #333;
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.chart-section:nth-child(3) {
+    grid-column: 1 / -1;
+}
+
+/* Peak Hours Heatmap */
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.heatmap-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.05);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.hour-label {
+    font-size: 12px;
+    color: #666;
+    font-weight: bold;
+}
+
+.hour-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 4px;
+}
+
+/* Data Table */
+.data-table-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.data-table-section h3 {
+    color: #333;
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.data-table th {
+    background: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+}
+
+.data-table tr:hover {
+    background: #f8f9fa;
+}
+
+/* Badges */
+.type-badge,
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.type-badge {
+    color: white;
+}
+
+.type-info-session {
+    background: #2196F3;
+}
+
+.type-document-completion {
+    background: #4CAF50;
+}
+
+.type-fingerprints {
+    background: #FF9800;
+}
+
+.type-orientation {
+    background: #9C27B0;
+}
+
+.type-badge {
+    background: #607D8B;
+}
+
+.type-unknown {
+    background: #757575;
+}
+
+.status-badge {
+    color: white;
+}
+
+.status-completed {
+    background: #4CAF50;
+}
+
+.status-pending {
+    background: #FF9800;
+}
+
+.status-cancelled {
+    background: #F44336;
+}
+
+.status-in-progress {
+    background: #2196F3;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 1200px) {
+    .charts-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-section:nth-child(3) {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    #admin-dashboard-container {
+        padding: 10px;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .dashboard-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .dashboard-filters {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .dashboard-filters select {
+        width: 100%;
+    }
+    
+    .kpi-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .kpi-card {
+        padding: 20px;
+    }
+    
+    .kpi-icon {
+        font-size: 2.5rem;
+        margin-right: 15px;
+    }
+    
+    .kpi-value {
+        font-size: 2rem;
+    }
+    
+    .chart-section {
+        padding: 20px;
+    }
+    
+    .heatmap-grid {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: 6px;
+    }
+    
+    .heatmap-cell {
+        padding: 8px 4px;
+    }
+    
+    .hour-label {
+        font-size: 10px;
+    }
+    
+    .hour-value {
+        font-size: 14px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .kpi-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .kpi-icon {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .chart-section {
+        padding: 15px;
+    }
+    
+    .heatmap-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    
+    .data-table {
+        font-size: 12px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 6px 8px;
+    }
+    
+    .type-badge,
+    .status-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+}
+
+/* Loading States */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #4CAF50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.chart-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    color: #666;
+}
+
+/* Print Styles */
+@media print {
+    .dashboard-filters {
+        display: none;
+    }
+    
+    .kpi-card,
+    .chart-section,
+    .data-table-section {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document Queue Test</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <h1>Document Queue Test</h1>
+    <button onclick="testWrite()">Test Write to document-queue</button>
+    <div id="result"></div>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqCb-EemIJovnlfXi7WcrRTGlganT0nu8",
+            authDomain: "kelly-education-front-desk.firebaseapp.com",
+            projectId: "kelly-education-front-desk",
+            storageBucket: "kelly-education-front-desk.firebasestorage.app",
+            messagingSenderId: "889045332167",
+            appId: "1:889045332167:web:c24f8cda6e0287bc374ee2",
+            measurementId: "G-LCCYG8N7Q5"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        async function testWrite() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const testData = {
+                    name: 'Test User',
+                    queueNumber: 999,
+                    timestamp: new Date().toISOString(),
+                    test: true
+                };
+                
+                console.log('Writing to document-queue...');
+                const docRef = await db.collection('document-queue').add(testData);
+                
+                resultDiv.innerHTML = `<div style="color: green;">SUCCESS! Document ID: ${docRef.id}</div>`;
+                console.log('Success! Document ID:', docRef.id);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div style="color: red;">ERROR: ${error.message}</div>`;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

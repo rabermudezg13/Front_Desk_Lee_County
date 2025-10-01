@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Completion - Kelly Education</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #2E7D32;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .submit-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            background: #45a049;
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 Document Completion</h1>
+        <p class="subtitle">Clean, working form</p>
+        
+        <form id="completion-form">
+            <div class="form-group">
+                <label for="full-name">Your Full Name *</label>
+                <input type="text" id="full-name" name="fullName" required 
+                       placeholder="Enter your complete name">
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submit-btn">
+                ✅ Submit Document Completion
+            </button>
+        </form>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNz8EFJA9Cqg7qruBCuKA7d6A9mHDOdM8",
+            authDomain: "kelly-education-front-desk.firebaseapp.com",
+            projectId: "kelly-education-front-desk",
+            storageBucket: "kelly-education-front-desk.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef1234567890abcdef"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // Submit function
+        async function submitForm(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const name = document.getElementById('full-name').value.trim();
+            const statusDiv = document.getElementById('status');
+            
+            if (!name) {
+                statusDiv.innerHTML = '<div class="error">Please enter your full name</div>';
+                return;
+            }
+            
+            // Disable button
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processing...';
+            statusDiv.innerHTML = '';
+            
+            try {
+                // Prepare data with regular timestamp (NO serverTimestamp)
+                const now = new Date();
+                const queueNumber = Math.floor(now.getTime() / 1000) % 10000;
+                
+                const completionData = {
+                    type: 'document-completion',
+                    name: name,
+                    queueNumber: queueNumber,
+                    timestamp: now.toISOString(), // Regular timestamp, NOT serverTimestamp
+                    date: now.toISOString().split('T')[0],
+                    time: now.toLocaleString(),
+                    completedAt: now.toLocaleString(),
+                    source: 'clean-form'
+                };
+                
+                console.log('Saving to Firestore...', completionData);
+                
+                // Save to Firestore
+                const docRef = await db.collection('document-completions').add(completionData);
+                
+                console.log('Success! Document ID:', docRef.id);
+                
+                // Show success
+                statusDiv.innerHTML = `
+                    <div class="success">
+                        <h3>🎉 Success!</h3>
+                        <p><strong>${name}</strong></p>
+                        <p>Your queue number is: <strong>#${queueNumber}</strong></p>
+                        <p>Please proceed to the front desk.</p>
+                    </div>
+                `;
+                
+                // Reset form
+                document.getElementById('completion-form').reset();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                
+                statusDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Error</h3>
+                        <p>${error.message}</p>
+                        <p>Please try again or contact the front desk.</p>
+                    </div>
+                `;
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Submit Document Completion';
+            }
+        }
+        
+        // Bind form submission
+        document.getElementById('completion-form').addEventListener('submit', submitForm);
+    </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Syntax Test</title>
+</head>
+<body>
+    <h1>Testing JavaScript Syntax</h1>
+    <div id="result"></div>
+    
+    <script>
+        try {
+            console.log('Testing if setupFormHandler exists...');
+            
+            // Test if the main form exists
+            const form = document.getElementById('simple-doc-completion-form');
+            console.log('Form found:', !!form);
+            
+            // Test if Firebase is available
+            console.log('Firebase available:', typeof firebase !== 'undefined');
+            
+            // Test if syncToFirebase function exists
+            console.log('syncToFirebase available:', typeof window.syncToFirebase !== 'undefined');
+            
+            document.getElementById('result').innerHTML = 'Syntax test completed - check console';
+            
+        } catch (error) {
+            console.error('Syntax error detected:', error);
+            document.getElementById('result').innerHTML = 'Syntax error: ' + error.message;
+        }
+    </script>
+</body>
+</html>
