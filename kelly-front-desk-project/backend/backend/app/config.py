@@ -21,10 +21,10 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8080"
     ]
     
-    # Cloud Run Configuration
+    # Render/Cloud Configuration
     debug: bool = False
     host: str = "0.0.0.0"
-    port: int = int(os.getenv("PORT", 8080))
+    port: int = int(os.getenv("PORT", 10000))
     
     class Config:
         env_file = ".env"
