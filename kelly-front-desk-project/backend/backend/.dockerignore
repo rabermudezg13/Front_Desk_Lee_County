@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+.env
+
+# Firebase credentials (will use environment variables)
+firebase_credentials.json
+*.json
+
+# Development files
+.git/
+.gitignore
+README.md
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
